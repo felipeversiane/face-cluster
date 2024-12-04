@@ -1,0 +1,33 @@
+# Ambiente virtual
+venv/
+.venv/
+
+# Arquivos do Poetry
+.poetry/
+poetry.lock
+
+# Arquivos do Python
+*.pyc
+*.pyo
+__pycache__/
+
+# Diretórios de build
+build/
+dist/
+*.egg-info/
+
+# Arquivos de configuração do editor
+.vscode/
+.idea/
+
+# Arquivos do Jupyter (se estiver usando)
+.ipynb_checkpoints/
+
+# Arquivos temporários do sistema
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Arquivos de log
+*.log
