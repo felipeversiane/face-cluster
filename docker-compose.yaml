@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  face-cluster:
+    build:
+      context: .
+    container_name: fc02
+    volumes:
+      - ./dataset:/app/dataset
+      - ./src:/app/src  
+    working_dir: /app/src
+    command: python main.py  
+    stdin_open: true
+    tty: true
