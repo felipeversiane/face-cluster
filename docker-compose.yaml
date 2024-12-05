@@ -1,13 +1,34 @@
 version: "3.9"
 services:
-  face-cluster:
+  encode-faces:
     build:
       context: .
-    container_name: fc02
+    container_name: ef02
     volumes:
-      - ./dataset:/app/dataset
-      - ./src:/app/src  
-    working_dir: /app/src
-    command: python main.py  
+      - ./database:/app/database
+      - ./encodings:/app
+    command: python /app/src/encode_faces.py --dataset /app/database --encodings /app/encodings.pickle
     stdin_open: true
     tty: true
+    environment:
+      - ENCODINGS_PATH=/app/encodings.pickle
+      - FACE_DATA_PATH=/app/face_cluster
+      - CLUSTERING_RESULT_PATH=/app/face_cluster
+
+  cluster-faces:
+    build:
+      context: .
+    container_name: cf02
+    volumes:
+      - ./database:/app/database
+      - ./encodings:/app
+    depends_on:
+      encode-faces:
+        condition: service_completed_successfully
+    command: python /app/src/cluster_faces.py --encodings /app/encodings.pickle
+    stdin_open: true
+    tty: true
+    environment:
+      - ENCODINGS_PATH=/app/encodings.pickle
+      - FACE_DATA_PATH=/app/face_cluster
+      - CLUSTERING_RESULT_PATH=/app/face_cluster

@@ -9,13 +9,15 @@ RUN apt-get update && apt-get install -y \
     libatlas-base-dev \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app/src
+WORKDIR /app
 
-COPY src/requirements.txt .
-
+COPY src/requirements.txt /app/
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+    pip install -r /app/requirements.txt
 
-COPY src/ .
-
+COPY src/ /app/src/
+RUN ls -la /app/src/
 COPY ./database /app/database
+RUN ls -la /app/database
+
+CMD ["python"]
