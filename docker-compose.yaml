@@ -7,12 +7,10 @@ services:
     volumes:
       - ./database:/app/database
       - ./encodings:/app
-    command: python /app/src/encode_faces.py --dataset /app/database --encodings /app/encodings.pickle
-    stdin_open: true
-    tty: true
+    command: python /app/src/encode_faces.py
     environment:
       - ENCODINGS_PATH=/app/encodings.pickle
-      - FACE_DATA_PATH=/app/face_cluster
+      - FACE_DATA_PATH=/app/database
       - CLUSTERING_RESULT_PATH=/app/face_cluster
 
   cluster-faces:
@@ -25,10 +23,8 @@ services:
     depends_on:
       encode-faces:
         condition: service_completed_successfully
-    command: python /app/src/cluster_faces.py --encodings /app/encodings.pickle
-    stdin_open: true
-    tty: true
+    command: python /app/src/cluster_faces.py
     environment:
       - ENCODINGS_PATH=/app/encodings.pickle
-      - FACE_DATA_PATH=/app/face_cluster
+      - FACE_DATA_PATH=/app/database
       - CLUSTERING_RESULT_PATH=/app/face_cluster

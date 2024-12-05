@@ -1,58 +1,32 @@
-# import the necessary packages
+# encode_faces.py
+
 from imutils import paths
 import face_recognition
-import argparse
 import pickle
 import cv2
 import os
-from constants import ENCODINGS_PATH  # Importando de constants.py para definir o caminho adequado
+from constants import ENCODINGS_PATH, FACE_DATA_PATH
 
-# construct the argument parser and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--dataset", required=True,
-    help="path to input directory of faces + images")
-ap.add_argument("-e", "--encodings", required=True,
-    help="path to serialized database of facial encodings")
-ap.add_argument("-d", "--detection_method", type=str, default="cnn",
-    help="face detection model to use: either hog or cnn")
-args = vars(ap.parse_args())
-
-# grab the paths to the input images in our dataset, then initialize
-# out data list (which we'll soon populate)
 print("[INFO] quantifying faces...")
-imagePaths = list(paths.list_images(args["dataset"]))
+imagePaths = list(paths.list_images(FACE_DATA_PATH))
 data = []
 
-# loop over the image paths
 for (i, imagePath) in enumerate(imagePaths):
-    # load the input image and convert it from RGB (OpenCV ordering)
-    # to dlib ordering (RGB)
-    print("[INFO] processing image {}/{}".format(i + 1, len(imagePaths)))
+    print(f"[INFO] processing image {i + 1}/{len(imagePaths)}")
     print(imagePath)
 
-    # loading image to BGR
     image = cv2.imread(imagePath)
+    rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-    # converting image to RGB format
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    boxes = face_recognition.face_locations(rgb, model="cnn")
+    encodings = face_recognition.face_encodings(rgb, boxes)
 
-    # detect the (x, y)-coordinates of the bounding boxes
-    # corresponding to each face in the input image
-    boxes = face_recognition.face_locations(image, model=args["detection_method"])
+    for (box, enc) in zip(boxes, encodings):
+        d = {"imagePath": imagePath, "loc": box, "encoding": enc}
+        data.append(d)
 
-    # compute the facial embedding for the face
-    encodings = face_recognition.face_encodings(image, boxes)
-
-    # build a dictionary of the image path, bounding box location,
-    # and facial encodings for the current image
-    d = [{"imagePath": imagePath, "loc": box, "encoding": enc}
-         for (box, enc) in zip(boxes, encodings)]
-    data.extend(d)
-
-# dump the facial encodings data to disk
 print("[INFO] serializing encodings...")
-f = open(args["encodings"], "wb")
-f.write(pickle.dumps(data))
-f.close()
+with open(ENCODINGS_PATH, "wb") as f:
+    f.write(pickle.dumps(data))
 
 print(f"Encodings of images saved in {ENCODINGS_PATH}")

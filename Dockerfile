@@ -16,8 +16,7 @@ RUN pip install --upgrade pip && \
     pip install -r /app/requirements.txt
 
 COPY src/ /app/src/
-RUN ls -la /app/src/
+
 COPY ./database /app/database
-RUN ls -la /app/database
 
 CMD ["python"]
