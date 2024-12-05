@@ -6,12 +6,12 @@ services:
     container_name: ef02
     volumes:
       - ./database:/app/database
-      - ./encodings:/app
+      - ./encodings:/app/encodings
     command: python /app/src/encode_faces.py
     environment:
       - ENCODINGS_PATH=/app/encodings.pickle
       - FACE_DATA_PATH=/app/database
-      - CLUSTERING_RESULT_PATH=/app/face_cluster
+      - CLUSTERING_RESULT_PATH=/app/results
 
   cluster-faces:
     build:
@@ -27,4 +27,4 @@ services:
     environment:
       - ENCODINGS_PATH=/app/encodings.pickle
       - FACE_DATA_PATH=/app/database
-      - CLUSTERING_RESULT_PATH=/app/face_cluster
+      - CLUSTERING_RESULT_PATH=/app/results

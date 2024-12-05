@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libxrender-dev \
     libatlas-base-dev \
+    libglib2.0-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -16,7 +17,7 @@ RUN pip install --upgrade pip && \
     pip install -r /app/requirements.txt
 
 COPY src/ /app/src/
-
 COPY ./database /app/database
+RUN ls -la /app/database
 
 CMD ["python"]
