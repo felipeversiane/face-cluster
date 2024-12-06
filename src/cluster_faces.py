@@ -104,6 +104,8 @@ def process_clusters(data, labels):
     numUniqueFaces = len(labelIDs[labelIDs > -1])
     logger.info(f"Unique faces: {numUniqueFaces}")
 
+    processed_images = set() 
+
     for labelID in labelIDs:
         logger.info(f"Processing faces for label: {labelID}")
         idxs = np.where(labels == labelID)[0]
@@ -113,6 +115,11 @@ def process_clusters(data, labels):
         faces = []
         for i in idxs:
             imagePath = data[i]["imagePath"]
+
+            if (imagePath, labelID) in processed_images:
+                logger.debug(f"Skipping duplicate image: {imagePath}")
+                continue
+
             image = validate_image(imagePath)
             if image is None:
                 continue
@@ -121,7 +128,9 @@ def process_clusters(data, labels):
             face = image[int(top):int(bottom), int(left):int(right)]
             face = cv2.resize(face, (96, 96))
             faces.append(face)
+
             move_image(image, i, labelID)
+            processed_images.add((imagePath, labelID))
 
         if faces:
             montage = build_montages(faces, (96, 96), (5, 5))[0]
@@ -130,7 +139,6 @@ def process_clusters(data, labels):
             cv2.imwrite(output_path, montage)
         else:
             logger.warning(f"No faces found for label: {labelID}")
-
 
 def main():
     """
