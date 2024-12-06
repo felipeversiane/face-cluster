@@ -1,3 +1,4 @@
+import random
 from imutils import paths
 import face_recognition
 import pickle
@@ -67,12 +68,15 @@ def process_image(imagePath):
 
 logger.info("Quantifying faces...")
 imagePaths = list(paths.list_images(FACE_DATA_PATH))
-data = []
+
+logger.info("Shuffling images...")
+random.shuffle(imagePaths)  
 
 if not imagePaths:
     logger.error("No images found in the dataset directory.")
     exit(1)
 
+data = []
 for (i, imagePath) in enumerate(imagePaths):
     logger.info(f"Processing image {i + 1}/{len(imagePaths)}: {imagePath}")
     
