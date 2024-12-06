@@ -4,8 +4,8 @@ import numpy as np
 import pickle
 import cv2
 import os
+from config import ENCODINGS_PATH, CLUSTERING_RESULT_PATH
 from logger import logger
-from constants import ENCODINGS_PATH, CLUSTERING_RESULT_PATH
 
 def move_image(image, id, labelID):
     if labelID == -1:
@@ -34,26 +34,25 @@ data = np.array(data)
 encodings = [d["encoding"] for d in data if "encoding" in d]
 
 if not encodings:
-    raise ValueError("[ERROR] No valid encodings found!")
+    raise ValueError("No valid encodings found!")
 
-logger.info("Performing clustering...")
+logger.info("Clustering...")
 clt = AgglomerativeClustering(
     n_clusters=None,
-    distance_threshold=0.8,
+    distance_threshold=0.7,  
     affinity="euclidean",
-    linkage="ward",
+    linkage="complete",
 )
 clt.fit(encodings)
 
 labelIDs = np.unique(clt.labels_)
 numUniqueFaces = len(labelIDs[labelIDs > -1])
-logger.info(f"Found {numUniqueFaces} unique face(s).")
+logger.info(f"Unique faces: {numUniqueFaces}")
 
 for labelID in labelIDs:
     logger.info(f"Processing faces for label: {labelID}")
     idxs = np.where(clt.labels_ == labelID)[0]
     if len(idxs) == 0:
-        logger.warning(f"No faces found for label: {labelID}")
         continue
 
     faces = []
@@ -74,4 +73,7 @@ for labelID in labelIDs:
         title = f"label{labelID}" if labelID != -1 else "unknown"
         output_path = os.path.join(CLUSTERING_RESULT_PATH, f"{title}.jpg")
         cv2.imwrite(output_path, montage)
-        logger.info(f"Saved montage for label {labelID} at {output_path}")
+    else:
+        logger.warning(f"No faces found for label: {labelID}")
+
+
