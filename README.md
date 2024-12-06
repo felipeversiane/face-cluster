@@ -47,7 +47,7 @@ docker-compose up --build
 
 - `encodings/` : Directory where the serialized facial encodings will be saved after processing.
 
-- `face_cluster/` : The output folder where clustered images and results will be saved.
+- `results/` : The output folder where clustered images and results will be saved.
 
 ## Environment Variables:
 
@@ -59,9 +59,9 @@ docker-compose up --build
 
 ## Usage in Docker:
 
-- `encode-faces` service processes images and generates face encodings.
+- `encode-faces`  processes images and generates face encodings.
 
-- `cluster-faces` service uses DBSCAN to group faces into clusters, storing them in the designated result path.
+- `cluster-faces`  uses DBSCAN to group faces into clusters, storing them in the designated result path.
 
 ## Notes:
 
