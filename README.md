@@ -31,13 +31,15 @@ Use this to copy the source code in your machine:
 git clone https://github.com/felipeversiane/face-cluster.git
 ```
 
-### 2. Build and start the docker containers:
+### 2. Build and running:
 
-Use this to build, download the dependences and start containers : 
+Use this to build, download the dependences and running app : 
 
 ```bash
 docker-compose up --build
 ```
+
+With this command, the code will be executed, first running the `encode_faces.py` file and then the `cluster_faces.py` file. This will create two folders called results and encodings, in which you will have the result of the executed code.
 
 ## Directory structure:
 
