@@ -51,6 +51,15 @@ With this command, the code will be executed, first running the `encode_faces.py
 
 - `results/` : The output folder where clustered images and results will be saved.
 
+## Results:
+
+The cluster results will be stored in the results folder, where it will be possible to see each label/cluster created with their respective images
+
+Example: 
+
+- label1: image0.jpg, image1.jpg, image14.jpg ....
+- label2: ....
+
 ## Environment Variables:
 
 - ENCODINGS_PATH: Path to the serialized encodings file.
