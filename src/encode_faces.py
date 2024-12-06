@@ -4,7 +4,6 @@ from imutils import paths
 import face_recognition
 import pickle
 import cv2
-import os
 from constants import ENCODINGS_PATH, FACE_DATA_PATH
 
 print("[INFO] Starting encode_faces.py...")

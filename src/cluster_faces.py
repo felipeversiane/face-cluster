@@ -5,16 +5,20 @@ from imutils import build_montages
 import numpy as np
 import pickle
 import cv2
-import shutil
 import os
-from constants import FACE_DATA_PATH, ENCODINGS_PATH, CLUSTERING_RESULT_PATH
+from constants import ENCODINGS_PATH, CLUSTERING_RESULT_PATH
+
 
 def move_image(image, id, labelID):
+    if labelID == -1:
+        return
+
     path = os.path.join(CLUSTERING_RESULT_PATH, f'label{labelID}')
     if not os.path.exists(path):
         os.makedirs(path)
     filename = f'{id}.jpg'
     cv2.imwrite(os.path.join(path, filename), image)
+
 
 print("[INFO] loading encodings...")
 if not os.path.exists(ENCODINGS_PATH):
@@ -36,6 +40,9 @@ print(f"[INFO] # unique faces: {numUniqueFaces}")
 for labelID in labelIDs:
     print(f"[INFO] faces for face ID: {labelID}")
     idxs = np.where(clt.labels_ == labelID)[0]
+    if len(idxs) == 0:
+        continue
+
     idxs = np.random.choice(idxs, size=min(25, len(idxs)), replace=False)
 
     faces = []
@@ -49,8 +56,8 @@ for labelID in labelIDs:
         face = cv2.resize(face, (96, 96))
         faces.append(face)
 
-    montage = build_montages(faces, (96, 96), (5, 5))[0]
-
-    title = f"Face ID #{labelID}"
-    title = "Unknown Faces" if labelID == -1 else title
-    cv2.imwrite(os.path.join(CLUSTERING_RESULT_PATH, f"{title}.jpg"), montage)
+    if faces:
+        montage = build_montages(faces, (96, 96), (5, 5))[0]
+        title = f"Face ID #{labelID}" if labelID != -1 else "Unknown Faces"
+        output_path = os.path.join(CLUSTERING_RESULT_PATH, f"{title}.jpg")
+        cv2.imwrite(output_path, montage)

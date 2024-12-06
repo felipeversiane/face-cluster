@@ -31,3 +31,8 @@ Thumbs.db
 
 # Arquivos de log
 *.log
+
+# Custom
+
+/encodings
+/results
