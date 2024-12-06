@@ -4,8 +4,8 @@ import numpy as np
 import pickle
 import cv2
 import os
+from logger import logger
 from constants import ENCODINGS_PATH, CLUSTERING_RESULT_PATH
-
 
 def move_image(image, id, labelID):
     if labelID == -1:
@@ -19,12 +19,12 @@ def move_image(image, id, labelID):
 def validate_image(imagePath):
     image = cv2.imread(imagePath)
     if image is None:
-        print(f"[ERROR] Unable to load image: {imagePath}")
+        logger.error(f"Unable to load image: {imagePath}")
         return None
     return image
 
 
-print("[INFO] Loading encodings...")
+logger.info("Loading encodings...")
 if not os.path.exists(ENCODINGS_PATH):
     raise ValueError(f"File {ENCODINGS_PATH} not found.")
 with open(ENCODINGS_PATH, "rb") as f:
@@ -36,7 +36,7 @@ encodings = [d["encoding"] for d in data if "encoding" in d]
 if not encodings:
     raise ValueError("[ERROR] No valid encodings found!")
 
-print("[INFO] Clustering...")
+logger.info("Performing clustering...")
 clt = AgglomerativeClustering(
     n_clusters=None,
     distance_threshold=0.8,
@@ -47,12 +47,13 @@ clt.fit(encodings)
 
 labelIDs = np.unique(clt.labels_)
 numUniqueFaces = len(labelIDs[labelIDs > -1])
-print(f"[INFO] # Unique faces: {numUniqueFaces}")
+logger.info(f"Found {numUniqueFaces} unique face(s).")
 
 for labelID in labelIDs:
-    print(f"[INFO] Processing faces for label: {labelID}")
+    logger.info(f"Processing faces for label: {labelID}")
     idxs = np.where(clt.labels_ == labelID)[0]
     if len(idxs) == 0:
+        logger.warning(f"No faces found for label: {labelID}")
         continue
 
     faces = []
@@ -73,5 +74,4 @@ for labelID in labelIDs:
         title = f"label{labelID}" if labelID != -1 else "unknown"
         output_path = os.path.join(CLUSTERING_RESULT_PATH, f"{title}.jpg")
         cv2.imwrite(output_path, montage)
-    else:
-        print(f"[WARNING] No faces found for label: {labelID}")
+        logger.info(f"Saved montage for label {labelID} at {output_path}")
